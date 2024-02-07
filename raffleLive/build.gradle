@@ -1,0 +1,32 @@
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat
+import org.gradle.api.tasks.testing.logging.TestLogEvent
+
+plugins {
+    	id 'java'
+    	id "org.gradle.java"
+	id 'application'
+	id("com.github.johnrengelman.shadow") version "6.0.0"
+}
+
+apply plugin: 'war'
+
+version '1'
+mainClassName = 'raffle.Main'
+
+repositories {
+    	mavenCentral()
+}
+
+tasks.jar {
+    manifest.attributes["Main-Class"] = "faucet.Main"
+}
+
+
+dependencies {
+	implementation 'org.apache.httpcomponents:httpclient:4.5.13'
+	implementation 'com.google.code.gson:gson:2.8.9'
+ 	implementation 'com.sparkjava:spark-core:2.9.3'
+	implementation 'uk.oczadly.karl:jnano:2.20.1'
+	implementation 'ch.qos.logback:logback-classic:1.2.6'
+}
+

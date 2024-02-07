@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Winners</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #333; /* Dark background color */
+            color: #fff; /* Light text color */
+            text-align: center;
+            overflow-x: auto; /* Enable horizontal scrolling when needed */
+        }
+
+        header {
+            background-color: #222; /* Darker header color */
+            color: #fff;
+            padding: 10px;
+            text-align: center;
+        }
+
+        nav {
+            background-color: #444; /* Dark navigation bar color */
+            padding: 10px;
+            text-align: center;
+        }
+
+        nav a {
+            color: #fff;
+            margin: 0 20px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        main {
+            padding: 20px;
+            min-height: 50vh;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            border: 1px solid #fff;
+            padding: 8px;
+        }
+
+        th {
+            background-color: #222;
+        }
+
+        td {
+            background-color: #444;
+        }
+
+        /* Responsive styles for smaller screens */
+        @media (max-width: 600px) {
+            table {
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>Winners</h1>
+    </header>
+
+    <nav>
+        <a href="/">Home</a>
+    </nav>
+
+    <main>
+        <table>
+            <thead>
+                <tr>
+                    <th>Winner</th>
+                    <th>Payout</th>
+                    <th>Time</th>
+                </tr>
+            </thead>
+            <tbody id="winnersTableBody"></tbody>
+        </table>
+    </main>
+
+    <script>
+        // Function to fetch winners data and populate the table
+        function fetchWinnersData() {
+            fetch('/winners.json')
+                .then(response => response.json())
+                .then(data => {
+                    const winnersTableBody = document.getElementById('winnersTableBody');
+
+                    // Clear previous table rows
+                    winnersTableBody.innerHTML = '';
+
+                    // Populate the table with data
+                    data.forEach(winner => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${winner.winner}</td>
+                            <td>${winner.payout}</td>
+                            <td>${winner.time}</td>
+                        `;
+                        winnersTableBody.appendChild(row);
+                    });
+                });
+        }
+
+        // Initial call to fetch and display winners data
+        fetchWinnersData();
+
+        // Update winners data every 5 minutes (adjust as needed)
+        setInterval(fetchWinnersData, 300000); // 300000 milliseconds = 5 minutes
+    </script>
+
+</body>
+
+</html>
+
