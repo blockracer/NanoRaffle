@@ -1,2 +1,0 @@
-# NanoRaffle
-Nano Raffle
