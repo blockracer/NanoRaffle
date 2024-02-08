@@ -54,6 +54,7 @@ public class Main {
         staticFiles.externalLocation("/home/server-admin/javaProjects/rafflePages");
         uri = new URI("wss://ws.nanoriver.io");
         ws = new NanoWebSocketClient(uri);
+	ws.setObserver(new Observer());
         if (!ws.connect()) {
             // Connection failed
             System.err.println("Could not connect to WebSocket!");

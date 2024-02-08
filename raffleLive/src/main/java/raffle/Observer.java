@@ -4,11 +4,12 @@ import uk.oczadly.karl.jnano.websocket.WsObserver;
 import raffle.Ws;
 import java.net.URISyntaxException;
 import java.lang.InterruptedException;
+import raffle.Main;
 
 public class Observer implements WsObserver {
     @Override
     public void onOpen(int httpStatus) {
-        //System.out.println("WebSocket connected!");
+        System.out.println("WebSocket connected!");
     }
 
     @Override
@@ -16,7 +17,14 @@ public class Observer implements WsObserver {
         System.out.println("WebSocket disconnected!");
 	//retry connection
 	try { 
+
+		if (!Main.ws.connect()) {
+            		// Connection failed
+            		System.err.println("Could not connect to WebSocket!");
+		}
+
 		Ws.webSocket();
+
 	}
 	catch(URISyntaxException | InterruptedException e) {
 		e.printStackTrace();

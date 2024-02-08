@@ -16,6 +16,16 @@ mainClassName = 'raffle.Main'
 repositories {
     	mavenCentral()
 }
+shadowJar {
+    archiveBaseName = 'raffle'
+    archiveClassifier = ''
+    archiveVersion = ''
+	doLast {
+       		// Set the desired name for the generated JAR file
+        	archiveFileName.set("raffle.jar")
+   	 }
+ 
+}
 
 tasks.jar {
     manifest.attributes["Main-Class"] = "faucet.Main"

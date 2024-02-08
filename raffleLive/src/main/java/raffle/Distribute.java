@@ -146,7 +146,7 @@ public class Distribute {
 				 HttpClient httpClient = HttpClients.createDefault();
 
         			// Define the URL you want to send the GET request to
-        			String url = "https://secreturl/" + winnerAccount + "/" + winnerPayoutStr + "/" + donationPayoutStr + "/" + myPayoutStr;
+        			String url = "https://secrecturl" + winnerAccount + "/" + winnerPayoutStr + "/" + donationPayoutStr + "/" + myPayoutStr;
 
         			// Create an HttpGet object with the URL
         			HttpGet httpGet = new HttpGet(url);
@@ -223,7 +223,7 @@ public class Distribute {
 				String zero = "0";
         			try {
 
-        				String url = "https://secreturl.com";
+        				String url = "https://secrecturl/getpotbalance";
 
         				HttpGet httpGet = new HttpGet(url);
 
