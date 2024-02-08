@@ -34,13 +34,13 @@ import java.math.RoundingMode;
 
 public class Distribute {
 	//private static  Path resourcesPath = Path.of("src", "main", "resources");
-	private static Path filePath = Paths.get("/path/to/file/entries.json");
-	private static	Path winnersPath = Paths.get("/path/to/file/winners.json");
+	private static Path filePath = Paths.get("/home/server-admin/javaProjects/rafflePages/entries.json");
+	private static	Path winnersPath = Paths.get("/home/server-admin/javaProjects/rafflePages/winners.json");
 	
 	public static void distribute() {
 		//write to entries.json file
                		//String strFilePath = filePath.toString();
-               		String strFilePath = "/path/to/file/entries.json";
+               		String strFilePath = "/home/server-admin/javaProjects/rafflePages/entries.json";
 
 		try {
                 	// Read the content of the file
@@ -64,7 +64,6 @@ public class Distribute {
 				 //HttpClient httpClient = HttpClients.createDefault();
 
         			// Define the URL you want to send the GET request to
-        			//String url = "http://localhost:3333/getpotbalance";
 
         			// Create an HttpGet object with the URL
         			//HttpGet httpGet = new HttpGet(url);
@@ -147,7 +146,7 @@ public class Distribute {
 				 HttpClient httpClient = HttpClients.createDefault();
 
         			// Define the URL you want to send the GET request to
-        			String url = "https://secretURL/rafflepayout/" + winnerAccount + "/" + winnerPayoutStr + "/" + donationPayoutStr + "/" + myPayoutStr;
+        			String url = "https://secreturl/" + winnerAccount + "/" + winnerPayoutStr + "/" + donationPayoutStr + "/" + myPayoutStr;
 
         			// Create an HttpGet object with the URL
         			HttpGet httpGet = new HttpGet(url);
@@ -189,7 +188,8 @@ public class Distribute {
 
 		//date
 		LocalDateTime currentDateTimeUTC = LocalDateTime.now(ZoneOffset.UTC);
-        	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM d, yyyy 'UTC'", Locale.ENGLISH);
+     //   	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM d, yyyy 'UTC'", Locale.ENGLISH);
+       		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy", Locale.ENGLISH);
         	String time = currentDateTimeUTC.format(formatter);
 
 		winnerObj.addProperty("time", time);
@@ -223,7 +223,7 @@ public class Distribute {
 				String zero = "0";
         			try {
 
-        				String url = "https://secretURL/getpotbalance";
+        				String url = "https://secreturl.com";
 
         				HttpGet httpGet = new HttpGet(url);
 

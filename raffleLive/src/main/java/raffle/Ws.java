@@ -43,78 +43,65 @@ import org.eclipse.jetty.websocket.api.annotations.*;
 
 import raffle.WebSocketHandler;
 import raffle.Distribute;
+import raffle.Main;
 
 
 public class Ws {
-
-
 	public static void balanceChecker(Session session) throws URISyntaxException, InterruptedException, IOException {
 
-		URI uri = new URI("wss://ws.nanoriver.io");
-		NanoWebSocketClient ws = new NanoWebSocketClient(uri);
-		NanoWebSocketClient ws2 = new NanoWebSocketClient(uri);
-		ws.setObserver(new Observer());
-		ws2.setObserver(new BalanceObserver());
-		String firstBal = Distribute.getBalance();
-				try {
-					BigDecimal balanceDec = new BigDecimal(firstBal).movePointLeft(30).stripTrailingZeros();
-					firstBal = balanceDec.toString();
-					Main.globalBalance = firstBal;
-					session.getRemote().sendString(firstBal);
-				}
-				catch (IOException e) {
-					e.printStackTrace();
-				}
+                String firstBal = Distribute.getBalance();
+                                try {
+                                        BigDecimal balanceDec = new BigDecimal(firstBal).movePointLeft(30).stripTrailingZeros();
+                                        firstBal = balanceDec.toString();
+                                        Main.globalBalance = firstBal;
+                                        session.getRemote().sendString(firstBal);
+                                }
+                                catch (IOException e) {
+                                        e.printStackTrace();
+                                }
+
+                // Register a topic listener (in this case, using a lambda function)
+                Main.ws.getTopics().topicConfirmedBlocks().registerListener((message, context) -> {
+                        System.out.println("found something in balance checker!!");
+                        Block block = message.getBlock();
+                        JsonObject blockJson = block.toJsonObject();
+                        String subtype = blockJson.get("subtype").getAsString();
+                                String balance = Distribute.getBalance();
+                                try {
+                                        BigDecimal balanceDec = new BigDecimal(balance).movePointLeft(30).stripTrailingZeros();
+                                        balance = balanceDec.toString();
+                                        Main.globalBalance = balance;
+                                        session.getRemote().sendString(balance);
+                                }
+                                catch (IOException e) {
+                                        e.printStackTrace();
+                                }
+                                catch (WebSocketException e) {
+                                        System.out.println("session closed");
+                                }
+                });
+                // Subscribe to the confirmed blocks topic, and specify filters and configuration
+                boolean subscribed = Main.ws.getTopics().topicConfirmedBlocks().subscribeBlocking(
+                        new TopicConfirmation.SubArgs()
+                                .includeElectionInfo() // Include election info in the messages
+                                .filterAccounts("nano_38sbai751batgzspmtf4x3bky7pcd3br19upemzbtb9jafaj4pdgbpo4phr5")
+                        );
+
+        }
 
 
-		// Attempt to connect to the WebSocket
-		if (!ws2.connect()) {
-    			// Connection failed
-    			System.err.println("Could not connect to WebSocket!");
 
-			
-		}
-		String compareAmount = "1";
-		// Register a topic listener (in this case, using a lambda function)
-		ws2.getTopics().topicConfirmedBlocks().registerListener((message, context) -> {
-			System.out.println("found something in balance checker!!");
-			Block block = message.getBlock();
-			JsonObject blockJson = block.toJsonObject();
-			String subtype = blockJson.get("subtype").getAsString();
-				String balance = Distribute.getBalance();
-				try {
-					BigDecimal balanceDec = new BigDecimal(balance).movePointLeft(30).stripTrailingZeros();
-					balance = balanceDec.toString();
-					Main.globalBalance = balance;
-					session.getRemote().sendString(balance);
-				}
-				catch (IOException e) {
-					e.printStackTrace();
-				}
-		});
-		// Subscribe to the confirmed blocks topic, and specify filters and configuration
-		boolean subscribed = ws2.getTopics().topicConfirmedBlocks().subscribeBlocking(
-        		new TopicConfirmation.SubArgs()
-                		.includeElectionInfo() // Include election info in the messages
-                		.filterAccounts("nano_38sbai751batgzspmtf4x3bky7pcd3br19upemzbtb9jafaj4pdgbpo4phr5")
-			);
 
-	}
 
 	public static void webSocket() throws URISyntaxException, InterruptedException {
-		URI uri = new URI("wss://ws.nanoriver.io");
-		NanoWebSocketClient ws = new NanoWebSocketClient(uri);
-		ws.setObserver(new Observer());
+		//URI uri = new URI("wss://ws.nanoriver.io");
+		//NanoWebSocketClient ws = new NanoWebSocketClient(uri);
+		//ws.setObserver(new Observer());
 
 		// Attempt to connect to the WebSocket
-		if (!ws.connect()) {
-    			// Connection failed
-    			System.err.println("Could not connect to WebSocket!");
-    			return;
-		}
 		String compareAmount = "1";
 		// Register a topic listener (in this case, using a lambda function)
-		ws.getTopics().topicConfirmedBlocks().registerListener((message, context) -> {
+		Main.ws.getTopics().topicConfirmedBlocks().registerListener((message, context) -> {
 			System.out.println("recieved something!");
  			System.out.println(message.getHash());                                      // Print the block hash
 			Block block = message.getBlock();
@@ -135,9 +122,9 @@ public class Ws {
 
 				//write to entries.json file
 				//Path resourcesPath = Path.of("src", "main", "resources");
-				Path filePath = Paths.get("/path/to/file/entries.json");
+				Path filePath = Paths.get("/home/server-admin/javaProjects/rafflePages/entries.json");
 				//String strFilePath = filePath.toString();
-				String strFilePath = "/path/to/file/entries.json";
+				String strFilePath = "/home/server-admin/javaProjects/rafflePages/entries.json";
 
 
 
@@ -207,7 +194,7 @@ public class Ws {
 
 
 		// Subscribe to the confirmed blocks topic, and specify filters and configuration
-		boolean subscribed = ws.getTopics().topicConfirmedBlocks().subscribeBlocking(
+		boolean subscribed = Main.ws.getTopics().topicConfirmedBlocks().subscribeBlocking(
         		new TopicConfirmation.SubArgs()
                 		.includeElectionInfo() // Include election info in the messages
                 		.filterAccounts("nano_38sbai751batgzspmtf4x3bky7pcd3br19upemzbtb9jafaj4pdgbpo4phr5")

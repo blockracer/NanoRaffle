@@ -8,7 +8,7 @@ import java.lang.InterruptedException;
 public class Observer implements WsObserver {
     @Override
     public void onOpen(int httpStatus) {
-        System.out.println("WebSocket connected!");
+        //System.out.println("WebSocket connected!");
     }
 
     @Override

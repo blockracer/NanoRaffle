@@ -10,6 +10,7 @@ import java.lang.InterruptedException;
 import java.io.IOException;
 
 import raffle.Ws;
+import raffle.Main;
 
 @WebSocket
 public class WebSocketHandler {
@@ -32,6 +33,11 @@ public class WebSocketHandler {
 		}
 		catch(IOException e) {
 			e.printStackTrace();
+
+		}
+		catch(WebSocketException e) {
+			//print to see connection spam
+			//System.out.println("websocketHandler session closed");
 
 		}
                 // Add any other code you want to execute every 100 seconds

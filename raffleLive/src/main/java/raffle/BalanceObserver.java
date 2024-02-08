@@ -8,7 +8,7 @@ import java.lang.InterruptedException;
 public class BalanceObserver implements WsObserver {
     @Override
     public void onOpen(int httpStatus) {
-        System.out.println("Balance WebSocket connected!");
+       // System.out.println("Balance WebSocket connected!");
     }
 
     @Override
