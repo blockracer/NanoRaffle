@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nano River | Raffle</title>
+    <link rel="stylesheet" href="/style.css">
+    <link rel="icon" href="rivercat.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="rivercat.ico" type="image/x-icon">
+</head>
+
+<body>
+
+	<div id="countdownTimer"></div>
+	<div id="qrcode"></div>
+	<div id="websocketMessage"></div>
+
+  
+
+    <script>
+        // WebSocket variable
+        let websocket;
+
+        function initializeWebSocket() {
+            websocket = new WebSocket('wss://balancews.nanoriver.io');
+
+            websocket.onopen = () => {
+                console.log('WebSocket connection opened');
+            };
+
+            websocket.addEventListener('message', (event) => {
+                const message = JSON.parse(event.data);
+                displayMessage(message);
+            });
+
+            websocket.addEventListener('close', (event) => {
+                console.log('WebSocket connection closed');
+                // Attempt to reconnect after a delay (e.g., 5 seconds)
+                setTimeout(initializeWebSocket, 5000);
+            });
+        }
+
+        // Initialize WebSocket connection
+        initializeWebSocket();
+
+        function updateCountdownTimer() {
+            // Fetch time from /time.json
+            fetch('/time.json')
+                .then(response => response.json())
+                .then(data => {
+                    const currentTime = Math.floor(Date.now() / 1000);
+                    const remainingTime = data.time - currentTime;
+
+                    // Calculate days, hours, minutes, and seconds
+                    const days = Math.floor(remainingTime / 86400);
+                    const hours = Math.floor((remainingTime % 86400) / 3600);
+                    const minutes = Math.floor((remainingTime % 3600) / 60);
+                    const seconds = remainingTime % 60;
+
+                    // Display the countdown timer
+                    const countdownTimer = document.getElementById('countdownTimer');
+                    countdownTimer.textContent = `Time Remaining: ${days}d ${hours}h ${minutes}m ${seconds}s`;
+
+                    // Check if the countdown timer reached 0
+                    if (remainingTime <= 0) {
+                        // Reload the page to update content based on the latest data
+                        location.reload();
+                    }
+                });
+        }
+
+        function displayMessage(message) {
+            const websocketMessages = document.getElementById('websocketMessages');
+            websocketMessages.textContent = "CURRENT POT: Ӿ" + message;
+
+            // Clear previous QR code
+            const qrcodeElement = document.getElementById('qrcode');
+            qrcodeElement.innerHTML = '';
+
+            // Generate QR Code
+            const qrcode = new QRCode(qrcodeElement, {
+                text: 'nano:nano_38sbai751batgzspmtf4x3bky7pcd3br19upemzbtb9jafaj4pdgbpo4phr5?amount=1000000000000000000000000000000',
+                width: 256,
+                height: 256
+            });
+        }
+
+        function checkConnection() {
+            if (websocket.readyState === WebSocket.OPEN) {
+                console.log('WebSocket connection is open');
+            } else {
+                console.log('WebSocket connection is closed');
+            }
+        }
+
+        setInterval(checkConnection, 5000);
+
+        // Initial call to update countdown timer
+        updateCountdownTimer();
+
+        // Update countdown timer every second
+        setInterval(updateCountdownTimer, 1000);
+    </script>
+
+    <!-- Your existing HTML content -->
+
+    <footer>
+        <div class="social-links">
+            <a href="#" class="social-icon"><i class="fab fa-reddit"></i></a>
+            <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
+            <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+            <a href="#" class="social-icon"><i class="fab fa-discord"></i></a>
+            <br><br>Powered by <a href="https://armour.dev" style="color:#fff">Armour Solutions</a>
+        </div>
+    </footer>
+
+</body>
+
+</html>
+

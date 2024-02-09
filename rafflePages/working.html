@@ -8,10 +8,11 @@
     <title>Nano River | Raffle</title>
     <link rel="stylesheet" href="/style.css">
     <link rel="icon" href="rivercat.ico" type="image/x-icon">
-    <link rel="shortcut icon" href="rivercat.ico" type="image/x-icon">
+  <link rel="shortcut icon" href="rivercat.ico" type="image/x-icon">
 </head>
 
 <body>
+
     <header>
         <div id="logo-container">
             <img id="logo" src="/logo.png" alt="Nano Raffle Logo">
@@ -45,37 +46,43 @@
 
     <script>
         let a = "?r=Armour";
-        const worker = new Worker('worker.js');
-
         // Function to update countdown timer
         function updateCountdownTimer() {
+            // Fetch time from /time.json
             fetch('/time.json')
                 .then(response => response.json())
                 .then(data => {
                     const currentTime = Math.floor(Date.now() / 1000);
                     const remainingTime = data.time - currentTime;
 
+                    // Calculate days, hours, minutes, and seconds
                     const days = Math.floor(remainingTime / 86400);
                     const hours = Math.floor((remainingTime % 86400) / 3600);
                     const minutes = Math.floor((remainingTime % 3600) / 60);
                     const seconds = remainingTime % 60;
 
+                    // Display the countdown timer
                     const countdownTimer = document.getElementById('countdownTimer');
                     countdownTimer.textContent = `Time Remaining: ${days}d ${hours}h ${minutes}m ${seconds}s`;
 
+                    // Check if the countdown timer reached 0
                     if (remainingTime <= 0) {
+                        // Reload the page to update content based on the latest data
                         location.reload();
                     }
                 });
         }
 
+        // Function to display the most recent message in the UI
         function displayMessage(message) {
             const websocketMessages = document.getElementById('websocketMessages');
             websocketMessages.textContent = "CURRENT POT: Ӿ" + message;
 
+            // Clear previous QR code
             const qrcodeElement = document.getElementById('qrcode');
             qrcodeElement.innerHTML = '';
 
+            // Generate QR Code
             const qrcode = new QRCode(qrcodeElement, {
                 text: 'nano:nano_38sbai751batgzspmtf4x3bky7pcd3br19upemzbtb9jafaj4pdgbpo4phr5?amount=1000000000000000000000000000000',
                 width: 256,
@@ -83,37 +90,29 @@
             });
         }
 
-        worker.onmessage = function (event) {
-            const data = event.data;
+        // WebSocket connection
+        var websocket = new WebSocket('wss://balancews.nanoriver.io');
+	const intervalId = setInterval(checkConnection, 5000);
 
-            switch (data.type) {
-                case 'open':
-                    console.log('WebSocket connection opened');
-                    break;
-                case 'message':
-                    displayMessage(data.data);
-                    break;
-                case 'close':
-                    console.log('WebSocket connection closed');
-                    setTimeout(() => {
-                        worker.postMessage({ type: 'reconnect' });
-                    }, 5000);
-                    break;
-                case 'checkConnection':
-                    if (!data.isConnected) {
-                        console.log('WebSocket connection is closed');
-                        worker.postMessage({ type: 'reconnect' });
-                    }
-                    break;
-                default:
-                    break;
-            }
-        };
+        // Event listener for WebSocket messages
+        websocket.addEventListener('message', (event) => {
+            const message = JSON.parse(event.data);
+            displayMessage(message);
+        });
 
+	 websocket.addEventListener('close', (event) => {
+        	// Call your method when WebSocket disconnects
+        	//websocket = new WebSocket('wss://balancews.nanoriver.io');
+    	});
+
+        // Initial call to update countdown timer
+        updateCountdownTimer();
+
+        // Update countdown timer every second
         setInterval(updateCountdownTimer, 1000);
-    </script>
-    <script>
-	     function openNanoLink() {
+
+
+        function openNanoLink() {
             const nanoLink = 'nano:nano_38sbai751batgzspmtf4x3bky7pcd3br19upemzbtb9jafaj4pdgbpo4phr5?amount=1000000000000000000000000000000';
             window.location.href = nanoLink;
         }
@@ -134,25 +133,24 @@
             // Extract the image name from the src attribute
             const imageUrl = document.getElementById('nanoCatImage').src;
             const imageName = imageUrl.split('/').pop().split('.')[0];
-
+            
             // Construct the link with the asset ID
             const assetId = imageName; // Use imageName directly as assetId
             const link = `https://nanswap.com/art/assets/${assetId}${a}`;
-
+            
             // Open the link in a new tab
             window.open(link, '_blank');
         }
-	    function handleVisibilityChange() {
-            if (document.visibilityState === 'visible') {
-                console.log('Page is visible. Reconnecting WebSocket...');
-                worker.postMessage({ type: 'reconnect' });
-            }
-        }
+	    function checkConnection() {
+    		if (websocket.readyState === WebSocket.OPEN) {
+        		console.log('WebSocket connection is open');
+    		} else {
+        		console.log('WebSockett connection is closed');
+        		websocket = new WebSocket('wss://balancews.nanoriver.io');
+    	    }
+}
 
-        document.addEventListener('visibilitychange', handleVisibilityChange);
-	    
-	</script>
-
+    </script>
     <div>
         <h1 id="pageTitle">EXTRA PRIZES</h1>
         <img id="nanoCatImage" src="/0P5CHo71ndu.png" alt="Nyano Cat" style="max-width: 100%; width: 300px; height: auto;" onclick="openNanoCatLink()" />
@@ -169,7 +167,7 @@
         </div>
     </footer>
 
+
 </body>
 
 </html>
-
