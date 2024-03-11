@@ -23,10 +23,10 @@ public class Observer implements WsObserver {
             		System.err.println("Could not connect to WebSocket!");
 		}
 
-		Ws.webSocket();
+		//Ws.webSocket();
 
 	}
-	catch(URISyntaxException | InterruptedException e) {
+	catch(InterruptedException e) {
 		e.printStackTrace();
 	}
     }

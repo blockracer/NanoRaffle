@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/style.css">
+    <title>Nano River | Winners</title>
+</head>
+
+<body>
+
+    <header>
+        <div id="logo-container">
+            <img id="logo" src="/logo.png" alt="Nano Raffle Logo">
+        </div>
+    </header>
+
+    <nav>
+        <a href="/">HOME</a>
+        <a href="/entries.html">CURRENT ENTRIES</a>
+    </nav>
+
+    <h1 id="pageTitle">PREVIOUS WINNERS</h1>
+    <hr class="divider">
+    <main id="secondary">
+        <table>
+            <thead>
+                <tr>
+                    <th>WINNER</th>
+                    <th>PAYOUT</th>
+                    <th>DATE</th>
+                </tr>
+            </thead>
+            <tbody id="winnersTableBody"></tbody>
+        </table>
+    </main>
+
+    <script>
+
+                           // <td>${winner.winner}</td>
+        // Function to fetch winners data, sort by date, and populate the table
+        function fetchWinnersData() {
+            fetch('/winners.json')
+                .then(response => response.json())
+                .then(data => {
+                    // Sort data by date in descending order
+                    data.sort((a, b) => new Date(b.time) - new Date(a.time));
+
+                    const winnersTableBody = document.getElementById('winnersTableBody');
+
+                    // Clear previous table rows
+                    winnersTableBody.innerHTML = '';
+
+                    // Populate the table with data
+                    data.forEach(winner => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+	  		    <td style="text-align: left;">${winner.winner}</td>
+                            <td>Ӿ${winner.payout}</td>
+                            <td>${winner.time}</td>
+                        `;
+                        winnersTableBody.appendChild(row);
+                    });
+                });
+        }
+
+        // Initial call to fetch and display winners data
+        fetchWinnersData();
+
+        // Update winners data every 5 minutes (adjust as needed)
+        setInterval(fetchWinnersData, 300000); // 300000 milliseconds = 5 minutes
+    </script>
+</body>
+
+</html>

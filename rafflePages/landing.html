@@ -7,8 +7,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nano River | Raffle</title>
     <link rel="stylesheet" href="/style.css">
-    <link rel="icon" href="rivercat.ico" type="image/x-icon">
-    <link rel="shortcut icon" href="rivercat.ico" type="image/x-icon">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+    <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
 </head>
 
 <body>
@@ -19,28 +20,38 @@
     </header>
 
     <nav>
-        <a href="/entries.html">CURRENT ENTRIES</a>
-        <a href="/winners.html">WINNERS</a>
+        <a href="/entries.html" class="navlink">ENTRIES</a>
+        <a href="/winners.html" class="navlink">WINNERS</a>
+        <a href="/about.html" class="navlink">ABOUT</a>
+
+
+	   <select  onchange="window.location.href=this.value">
+        <option value="#" selected disabled>Menu</option>
+        <option value="entries.html">Entries</option>
+        <option value="winners.html">Winners</option>
+        <option value="about.html">About</option>
+    </select>
     </nav>
 
     <main>
         <h1 id="pageTitle">NANO RAFFLE</h1>
         <hr class="divider">
-        <div id="entryMessage">Ӿ1 PER ENTRY</div><br><br>
+	<div id="entryMessage">Ӿ1 PER ENTRY <br>(Multiple entries from a single payment enabled)</div><br><br>
         <div id="nanoAddress">
             <strong>NANO ADDRESS:</strong><br><br>
-            <b>nano_38sbai751batgzspmtf4x3bky7pcd3br19upemzbtb9jafaj4pdgbpo4phr5</b>
+            <b>nano_1iroza4zsyt95uk6ucwhe1nwbe5q7g87gxfhcyuoetfkz5jmac8mtfwwoac4</b>
             <button id="copyButton" onclick="copyToClipboard()"><i class="fas fa-copy"></i></button>
         </div>
         <div id="qrcodeContainer">
             <div id="qrcode" onclick="openNanoLink()"></div>
         </div>
+	    <br>
+	    Tap QR code on mobile to open wallet.
         <div id="websocketMessages"></div>
         <div id="countdownTimer"></div><br><br>
         <hr class="divider">
     </main>
 
-    <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"></script>
 
     <script>
@@ -69,20 +80,26 @@
                 });
         }
 
-        function displayMessage(message) {
+        //text: 'nano:nano_38sbai751batgzspmtf4x3bky7pcd3br19upemzbtb9jafaj4pdgbpo4phr5?amount=1000000000000000000000000000000',
+	    function displayMessage(message) {
             const websocketMessages = document.getElementById('websocketMessages');
-            websocketMessages.textContent = "CURRENT POT: Ӿ" + message;
+
+            // Check if the pot amount is less than 0.00001
+            const potAmount = parseFloat(message);
+            const displayedPotAmount = (potAmount < 0.00001) ? 0 : potAmount.toFixed(5).replace(/\.?0+$/, '');
+
+            websocketMessages.textContent = `CURRENT POT: Ӿ${displayedPotAmount}`;
 
             const qrcodeElement = document.getElementById('qrcode');
             qrcodeElement.innerHTML = '';
-
-            const qrcode = new QRCode(qrcodeElement, {
-                text: 'nano:nano_38sbai751batgzspmtf4x3bky7pcd3br19upemzbtb9jafaj4pdgbpo4phr5?amount=1000000000000000000000000000000',
-                width: 256,
-                height: 256
+		const qrcode = new QRCode(qrcodeElement, {
+                	text: 'nano:nano_1iroza4zsyt95uk6ucwhe1nwbe5q7g87gxfhcyuoetfkz5jmac8mtfwwoac4',
+                	width: 128,
+                	height: 128
             });
-        }
 
+             }
+        
         worker.onmessage = function (event) {
             const data = event.data;
 
@@ -114,19 +131,19 @@
     </script>
     <script>
 	     function openNanoLink() {
-            const nanoLink = 'nano:nano_38sbai751batgzspmtf4x3bky7pcd3br19upemzbtb9jafaj4pdgbpo4phr5?amount=1000000000000000000000000000000';
+            const nanoLink = 'nano:nano_1iroza4zsyt95uk6ucwhe1nwbe5q7g87gxfhcyuoetfkz5jmac8mtfwwoac4';
             window.location.href = nanoLink;
         }
         // Function to copy Nano address to clipboard
         function copyToClipboard() {
-            const nanoAddress = 'nano_38sbai751batgzspmtf4x3bky7pcd3br19upemzbtb9jafaj4pdgbpo4phr5';
+            const nanoAddress = 'nano_1iroza4zsyt95uk6ucwhe1nwbe5q7g87gxfhcyuoetfkz5jmac8mtfwwoac4';
             const textarea = document.createElement('textarea');
             textarea.value = nanoAddress;
             document.body.appendChild(textarea);
             textarea.select();
             document.execCommand('copy');
             document.body.removeChild(textarea);
-            alert('Nano address copied to clipboard!');
+            //alert('Nano address copied to clipboard!');
         }
 
          // Function to open Nano Cat link in a new tab
@@ -137,7 +154,7 @@
 
             // Construct the link with the asset ID
             const assetId = imageName; // Use imageName directly as assetId
-            const link = `https://nanswap.com/art/assets/${assetId}${a}`;
+            const link = `https://nanswap.com/art/assets/${assetId}`;
 
             // Open the link in a new tab
             window.open(link, '_blank');
@@ -153,23 +170,9 @@
 	    
 	</script>
 
-    <div>
-        <h1 id="pageTitle">EXTRA PRIZES</h1>
-        <img id="nanoCatImage" src="/0P5CHo71ndu.png" alt="Nyano Cat" style="max-width: 100%; width: 300px; height: auto;" onclick="openNanoCatLink()" />
-        <p>The next winner will also receive this Nyano Cats NaNFT on <a href="https://nanswap.com/art?r=Armour" style="color:#2980b9" target="_blank">Nanswap Art</a>.<br><strong>IMPORTANT:</strong> Please enter this raffle with the Nano Address linked to your Nanswap account for transferring the asset.</p>
-    </div>
-
-    <footer>
-        <div class="social-links">
-            <a href="#" class="social-icon"><i class="fab fa-reddit"></i></a>
-            <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
-            <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
-            <a href="#" class="social-icon"><i class="fab fa-discord"></i></a>
-            <br><br>Powered by <a href="https://armour.dev" style="color:#fff">Armour Solutions</a>
-        </div>
-    </footer>
 
 </body>
+<footer style="color: white;">Made with <span style="color: red;">❤️</span> by <a href="https://github.com/blockracer" style="color: white;">@blockracer</a></footer>
 
 </html>
 

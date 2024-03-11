@@ -1,6 +1,8 @@
 package raffle;
 
-
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -23,6 +25,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import java.time.ZoneOffset;
 import java.time.LocalDateTime;
+import java.security.SecureRandom;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -64,6 +67,7 @@ public class Distribute {
 				 //HttpClient httpClient = HttpClients.createDefault();
 
         			// Define the URL you want to send the GET request to
+        			//String url = "http://localhost:3333/getpotbalance";
 
         			// Create an HttpGet object with the URL
         			//HttpGet httpGet = new HttpGet(url);
@@ -86,7 +90,7 @@ public class Distribute {
 						//BigDecimal potBig = new BigDecimal(potObj.get("balance").getAsString());
 						BigDecimal potBig = new BigDecimal(getBalance());
 
-						BigDecimal winnerPayout = potBig.multiply(new BigDecimal("0.925"));
+						BigDecimal winnerPayout = potBig.multiply(new BigDecimal("0.90"));
 						winnerPayout = winnerPayout.setScale(0, RoundingMode.DOWN);
 						String winnerPayoutStr = winnerPayout.toString();
 						System.out.println("winner payout: " + winnerPayout);
@@ -98,7 +102,7 @@ public class Distribute {
 						String donationPayoutStr = donationPayout.toString();
 
 
-						BigDecimal myPayout = potBig.multiply(new BigDecimal("0.05"));
+						BigDecimal myPayout = potBig.multiply(new BigDecimal("0.075"));
 						myPayout = myPayout.setScale(0, RoundingMode.DOWN);
 						String myPayoutStr = myPayout.toString();
 						System.out.println("my payout: " + myPayout);
@@ -137,8 +141,8 @@ public class Distribute {
 	}
 
 	 private static int getRandomIndex(int arrayLength) {
-        	Random random = new Random();
-        	return random.nextInt(arrayLength);
+		SecureRandom secureRandom = new SecureRandom();
+        	return secureRandom.nextInt(arrayLength);
     	}
 
 	private static void send(String winnerAccount, String winnerPayoutStr, String donationPayoutStr, String myPayoutStr) {
@@ -146,7 +150,9 @@ public class Distribute {
 				 HttpClient httpClient = HttpClients.createDefault();
 
         			// Define the URL you want to send the GET request to
-        			String url = "https://secrecturl" + winnerAccount + "/" + winnerPayoutStr + "/" + donationPayoutStr + "/" + myPayoutStr;
+        			String url = "https://secret.nanoriver.io/rafflepayout/" + winnerAccount + "/" + winnerPayoutStr + "/" + donationPayoutStr + "/" + myPayoutStr;
+
+        			//String url = "http://127.0.0.1:3333/rafflepayout/" + winnerAccount + "/" + winnerPayoutStr + "/" + donationPayoutStr + "/" + myPayoutStr;
 
         			// Create an HttpGet object with the URL
         			HttpGet httpGet = new HttpGet(url);
@@ -223,7 +229,9 @@ public class Distribute {
 				String zero = "0";
         			try {
 
-        				String url = "https://secrecturl/getpotbalance";
+        				String url = "https://secret.nanoriver.io/getpotbalance";
+
+        				//String url = "http://127.0.0.1:3333/getpotbalance";
 
         				HttpGet httpGet = new HttpGet(url);
 

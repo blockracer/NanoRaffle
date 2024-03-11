@@ -19,8 +19,17 @@
     </header>
 
     <nav>
-        <a href="/">HOME</a>
-        <a href="/entries.html">CURRENT ENTRIES</a>
+        <a href="/" class="navlink">HOME</a>
+        <a href="/entries.html" class="navlink">ENTRIES</a>
+        <a href="/about.html" class="navlink">ABOUT</a>
+
+
+	   <select  onchange="window.location.href=this.value">
+        <option value="#" selected disabled>Menu</option>
+        <option value="/">Home</option>
+        <option value="entries.html">Entries</option>
+        <option value="about.html">About</option>
+    </select>
     </nav>
 
     <h1 id="pageTitle">PREVIOUS WINNERS</h1>
@@ -45,7 +54,15 @@
                 .then(response => response.json())
                 .then(data => {
                     // Sort data by date in descending order
-                    data.sort((a, b) => new Date(b.time) - new Date(a.time));
+                    data.sort((a, b) => {
+                        const dateA = new Date(
+                            a.time.split('/').reverse().join('-')
+                        );
+                        const dateB = new Date(
+                            b.time.split('/').reverse().join('-')
+                        );
+                        return dateB - dateA;
+                    });
 
                     const winnersTableBody = document.getElementById('winnersTableBody');
 
@@ -56,8 +73,8 @@
                     data.forEach(winner => {
                         const row = document.createElement('tr');
                         row.innerHTML = `
-                            <td>${winner.winner}</td>
-                            <td>Ӿ${winner.payout}</td>
+                            <td style="text-align: left; cursor: pointer;" onclick="copyToClipboard('${winner.winner}')">${winner.winner}</td>
+                            <td>Ӿ${parseFloat(winner.payout).toFixed(4)}</td>
                             <td>${winner.time}</td>
                         `;
                         winnersTableBody.appendChild(row);
@@ -70,16 +87,14 @@
 
         // Update winners data every 5 minutes (adjust as needed)
         setInterval(fetchWinnersData, 300000); // 300000 milliseconds = 5 minutes
+
+        // Function to copy winner's address to clipboard and show alert
+        function copyToClipboard(address) {
+            navigator.clipboard.writeText(address);
+            alert(`Address copied to clipboard: ${address}`);
+        }
     </script>
 </body>
-<footer>
-    <div class="social-links">
-        <a href="#" class="social-icon"><i class="fab fa-reddit"></i></a>
-        <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
-        <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
-        <a href="#" class="social-icon"><i class="fab fa-discord"></i></a>
-        <br><br>Powered by <a href="https://armour.dev" style="color:#fff">Armour Solutions</a>
-    </div>
-</footer>
 
 </html>
+

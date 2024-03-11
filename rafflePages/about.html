@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/style.css">
+    <title>Nano River | About</title>
+    <style>
+        #aboutContent {
+            padding: 20px; /* Adjust the value as needed */
+            max-width: 800px; /* Optional: Set a maximum width for the content */
+            margin: 0 auto; /* Center the content horizontally */
+	    text-align: left;
+	    font-size: 18px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div id="logo-container">
+            <img id="logo" src="/logo.png" alt="Nano Raffle Logo">
+        </div>
+    </header>
+
+    <nav>
+        <a href="/" class="navlink">HOME</a>
+        <a href="/entries.html" class="navlink">ENTRIES</a>
+        <a href="/winners.html" class="navlink">WINNERS</a>
+	
+	<select  onchange="window.location.href=this.value">
+        <option value="#" selected disabled>Menu</option>
+        <option value="/">Home</option>
+        <option value="entries.html">ENTRIES</option>
+        <option value="winners.html">WINNERS</option>
+    </select>
+    </nav>
+
+    <h1 id="pageTitle">About</h1>
+    <hr class="divider">
+
+
+    <div id="aboutContent">
+	    <p><b>Nano Raffle is a raffle where users put in entries which cost 1 NANO each to build up a pot. Once every 7 days a winner is drawn and wins 90% of the pot. 2.5% goes to the Protocol Community fund and 7.5% goes to the owner. </b></p>
+    </div>
+
+
+
+    </body>
+
+</html>

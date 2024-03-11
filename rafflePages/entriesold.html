@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/style.css">
+    <title>Nano River | Current Entries</title>
+</head>
+
+<body>
+
+    <header>
+        <div id="logo-container">
+            <img id="logo" src="/logo.png" alt="Nano Raffle Logo">
+        </div>
+    </header>
+
+    <nav>
+        <a href="/">HOME</a>
+        <a href="/winners.html">WINNERS</a>
+    </nav>
+
+    <main id="secondary">
+        <h1 id="pageTitle">CURRENT ENTRIES</h1>
+        <hr class="divider">
+        <table>
+            <thead>
+                <tr>
+                    <th>ENTRY</th>
+                    <th>NANO ADDRESS</th>
+                </tr>
+            </thead>
+            <tbody id="entriesTableBody"></tbody>
+        </table>
+    </main>
+
+    <script>
+         // <td>${entry.address}</td>
+        // Function to fetch entries data and populate the table
+        function fetchEntriesData() {
+            fetch('/entries.json')
+                .then(response => response.json())
+                .then(data => {
+                    const entriesTableBody = document.getElementById('entriesTableBody');
+
+                    // Clear previous table rows
+                    entriesTableBody.innerHTML = '';
+
+                    // Populate the table with data
+                    data.forEach(entry => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${entry.entry}</td>
+	   		    <td style="text-align: left;">${entry.address}</td>
+                        `;
+                        entriesTableBody.appendChild(row);
+                    });
+                });
+        }
+
+        // Initial call to fetch and display entries data
+        fetchEntriesData();
+
+        // Update entries data every 5 minutes (adjust as needed)
+        setInterval(fetchEntriesData, 300000); // 300000 milliseconds = 5 minutes
+    </script>
+</body>
+
+</html>
+

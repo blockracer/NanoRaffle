@@ -42,7 +42,7 @@ public class WebSocketHandler {
 		}
                 // Add any other code you want to execute every 100 seconds
             }
-        }, 10000, 10000);
+        }, 30000, 30000);
         // Schedule the task to run at a fixed rate of 100 seconds
 	try {
 		Ws.balanceChecker(session);

@@ -33,11 +33,17 @@ import java.util.Map;
 import uk.oczadly.karl.jnano.websocket.NanoWebSocketClient;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.List;
+import java.util.ArrayList;
 
 import raffle.Ws;
 import raffle.Distribute;
 
 public class Main {
+	public static List<String> repeatCheck = new ArrayList<>();
 	private static final ConcurrentHashMap<String, AtomicLong> requestCounters = new ConcurrentHashMap<>();
     public static String globalBalance;
     private static final Map<String, Long> websocketConnectionTimestamps = new HashMap<>();
@@ -59,6 +65,16 @@ public class Main {
             // Connection failed
             System.err.println("Could not connect to WebSocket!");
         }
+	ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+
+        	// Define the task to be executed
+        Runnable task = () -> {
+            		// Your method logic goes here
+			repeatCheck.clear();
+        };
+
+        // Schedule the task to run every 30 minutes with an initial delay of 0 seconds
+        scheduler.scheduleAtFixedRate(task, 0, 30, TimeUnit.MINUTES);
 
         long next24 = 0;
 
@@ -91,8 +107,13 @@ public class Main {
                     halt(429, "Rate limit exceeded, try again later");
                 }
             }
+		String host = request.host();
+            	String mainDomain = extractMainDomain(host);
 
-		
+            	// Replace "allowedDomain" with the main domain you want to allow
+            	if (!"nanoriver.io".equals(mainDomain)) {
+                	halt(403, "Forbidden: Direct access to this server is not allowed.");
+		}
         });
 
 	get("/", (req, res) -> {
@@ -154,7 +175,7 @@ public class Main {
             System.out.println("next raffle is soon");
             delay = raffleTime - currentTime;
         } else {
-            raffleTime = currentTime + 604800;
+            raffleTime = currentTime + 432000;
             delay = raffleTime - currentTime;
             String raffleTimeStr = String.valueOf(raffleTime);
             JsonObject nextRaffleTimeObj = new JsonObject();
@@ -178,7 +199,7 @@ public class Main {
                 // write new time on time.json
                 try (PrintWriter writer = new PrintWriter(new File(strFilePath))) {
                     JsonObject nextRaffleTimeObj = new JsonObject();
-                    String nRaffle = String.valueOf((currentTime + 604800));
+                    String nRaffle = String.valueOf((currentTime + 432000));
                     nextRaffleTimeObj.addProperty("time", nRaffle);
                     String nextRaffleStr = nextRaffleTimeObj.toString();
                     writer.write(nextRaffleStr);
@@ -189,7 +210,7 @@ public class Main {
                 System.out.println("distributing!");
                 Distribute.distribute();
             }
-        }, delay * 1000, 604800 * 1000);
+        }, delay * 1000, 432000 * 1000);
 
         // start jnano websockets
         Ws.webSocket();

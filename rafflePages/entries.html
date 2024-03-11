@@ -19,8 +19,16 @@
     </header>
 
     <nav>
-        <a href="/">HOME</a>
-        <a href="/winners.html">WINNERS</a>
+        <a href="/" class="navlink">HOME</a>
+        <a href="/winners.html" class ="navlink">WINNERS</a>
+        <a href="/about.html" class="navlink">ABOUT</a>
+
+	   <select  onchange="window.location.href=this.value">
+        <option value="#" selected disabled>Menu</option>
+        <option value="/">Home</option>
+        <option value="winners.html">Winners</option>
+        <option value="about.html">About</option>
+    </select>
     </nav>
 
     <main id="secondary">
@@ -53,7 +61,7 @@
                         const row = document.createElement('tr');
                         row.innerHTML = `
                             <td>${entry.entry}</td>
-                            <td>${entry.address}</td>
+                            <td style="text-align: left; cursor: pointer;" onclick="copyToClipboard('${entry.address}')">${entry.address}</td>
                         `;
                         entriesTableBody.appendChild(row);
                     });
@@ -65,16 +73,13 @@
 
         // Update entries data every 5 minutes (adjust as needed)
         setInterval(fetchEntriesData, 300000); // 300000 milliseconds = 5 minutes
+
+        // Function to copy entry's address to clipboard and show alert
+        function copyToClipboard(address) {
+            navigator.clipboard.writeText(address);
+            alert(`Address copied to clipboard: ${address}`);
+        }
     </script>
-    <footer>
-        <div class="social-links">
-            <a href="#" class="social-icon"><i class="fab fa-reddit"></i></a>
-            <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
-            <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
-            <a href="#" class="social-icon"><i class="fab fa-discord"></i></a>
-            <br><br>Powered by <a href="https://armour.dev" style="color:#fff">Armour Solutions</a>
-        </div>
-    </footer>
 </body>
 
 </html>

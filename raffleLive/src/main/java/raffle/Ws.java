@@ -10,6 +10,7 @@ import uk.oczadly.karl.jnano.model.block.Block;
 import uk.oczadly.karl.jnano.model.NanoAmount;
 import java.math.BigInteger;
 import java.math.BigDecimal;
+import uk.oczadly.karl.jnano.rpc.exception.RpcException;
 
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -44,6 +45,21 @@ import org.eclipse.jetty.websocket.api.annotations.*;
 import raffle.WebSocketHandler;
 import raffle.Distribute;
 import raffle.Main;
+import uk.oczadly.karl.jnano.util.workgen.OpenCLWorkGenerator;
+import uk.oczadly.karl.jnano.util.workgen.WorkGenerator;
+import uk.oczadly.karl.jnano.util.workgen.FutureWork;
+import uk.oczadly.karl.jnano.util.workgen.GeneratedWork;
+import uk.oczadly.karl.jnano.model.HexData;
+import uk.oczadly.karl.jnano.model.work.WorkDifficulty;
+import uk.oczadly.karl.jnano.rpc.request.wallet.RequestSend;
+import uk.oczadly.karl.jnano.rpc.RpcQueryNode;
+import uk.oczadly.karl.jnano.rpc.request.node.RequestFrontiers;
+import uk.oczadly.karl.jnano.rpc.response.ResponseMultiAccountFrontiers;
+import uk.oczadly.karl.jnano.model.NanoAccount;
+import uk.oczadly.karl.jnano.rpc.response.ResponseBlockHash;
+import uk.oczadly.karl.jnano.model.work.WorkSolution;
+import uk.oczadly.karl.jnano.util.workgen.OpenCLWorkGenerator.OpenCLInitializerException;
+import uk.oczadly.karl.jnano.rpc.exception.RpcInvalidArgumentException;
 
 
 public class Ws {
@@ -84,7 +100,7 @@ public class Ws {
                 boolean subscribed = Main.ws.getTopics().topicConfirmedBlocks().subscribeBlocking(
                         new TopicConfirmation.SubArgs()
                                 .includeElectionInfo() // Include election info in the messages
-                                .filterAccounts("nano_38sbai751batgzspmtf4x3bky7pcd3br19upemzbtb9jafaj4pdgbpo4phr5")
+                                .filterAccounts("nano_1iroza4zsyt95uk6ucwhe1nwbe5q7g87gxfhcyuoetfkz5jmac8mtfwwoac4")
                         );
 
         }
@@ -94,37 +110,87 @@ public class Ws {
 
 
 	public static void webSocket() throws URISyntaxException, InterruptedException {
+
+		RpcQueryNode rpc = new RpcQueryNode("[::1]", 7076);
+
 		//URI uri = new URI("wss://ws.nanoriver.io");
 		//NanoWebSocketClient ws = new NanoWebSocketClient(uri);
 		//ws.setObserver(new Observer());
 
 		// Attempt to connect to the WebSocket
-		String compareAmount = "1";
+		//String compareAmount = "1";
+		BigDecimal compareAmount = new BigDecimal("1.0");
 		// Register a topic listener (in this case, using a lambda function)
 		Main.ws.getTopics().topicConfirmedBlocks().registerListener((message, context) -> {
 			System.out.println("recieved something!");
  			System.out.println(message.getHash());                                      // Print the block hash
 			Block block = message.getBlock();
 			JsonObject blockJson = block.toJsonObject();
+			HexData newHash = message.getHash();
+			String blockString = new Gson().toJson(blockJson);
 			String subtype = blockJson.get("subtype").getAsString();
-			System.out.println(subtype);
+			String previous = blockJson.get("previous").getAsString();
 			System.out.println(blockJson);
-			String amount = message.getAmount().getAsNano().toString();
+			System.out.println(subtype);
+			String strAmount = message.getAmount().getAsNano().toString();
+			BigDecimal amount = new BigDecimal(strAmount);	
+			int comparisonResult = amount.compareTo(compareAmount);
+			boolean matchFound = false;
+			 for (String str : Main.repeatCheck) {
+            			if (str.equalsIgnoreCase(previous)) {
+                			System.out.println("Match found: " + str);
+					matchFound = true;
+				}
+			}
+					System.out.println("got to match not found adding!");
 
-			if (subtype.equals("send") && amount.equals(compareAmount)) {
+					String entryAddress = blockJson.get("account").getAsString();
 
-				String entryAddress = blockJson.get("account").getAsString();
+					if (subtype.equals("send") && comparisonResult >= 0 && matchFound == false && !entryAddress.equals("nano_1iroza4zsyt95uk6ucwhe1nwbe5q7g87gxfhcyuoetfkz5jmac8mtfwwoac4")) {
+						String blockAccount = blockJson.get("account").getAsString();
 
-				//String entryAddress = blockJson.get("link_as_account").getAsString();
 
-				System.out.println("valid");
-				//get account
+						try {
+						//manually check frontier againt previous
+						RequestFrontiers frontiers = new RequestFrontiers(blockAccount, 1);
+                        			ResponseMultiAccountFrontiers frontierResponse =  rpc.processRequest(frontiers);
+                        			//byte[] accountBytes = source.getBytes();
+                        			NanoAccount nanoAccount = NanoAccount.parse(blockAccount);
+                        			HexData blockHash = frontierResponse.getFrontierBlockHash(nanoAccount);
+						if(!blockHash.equals(newHash)) {
 
-				//write to entries.json file
-				//Path resourcesPath = Path.of("src", "main", "resources");
-				Path filePath = Paths.get("/home/server-admin/javaProjects/rafflePages/entries.json");
-				//String strFilePath = filePath.toString();
-				String strFilePath = "/home/server-admin/javaProjects/rafflePages/entries.json";
+							System.out.println("Block ACCOUNT " + blockAccount);			
+							System.out.println("NEW HASH: " + newHash);			
+							System.out.println("BLOCK FRONTIER: " + blockHash);			
+							return;
+						}
+						}
+						catch (IOException e) {
+							e.printStackTrace();
+						}
+						catch (RpcException e) {
+							e.printStackTrace();
+						}
+
+
+					
+
+						 int firstDigit = Character.getNumericValue(strAmount.charAt(0));
+
+						 // loop through and add
+						 for (int i = 0; i < firstDigit; i++) {
+
+						//String entryAddress = blockJson.get("link_as_account").getAsString();
+
+							System.out.println("valid");
+							Main.repeatCheck.add(blockString);
+							//get account
+
+							//write to entries.json file
+							//Path resourcesPath = Path.of("src", "main", "resources");
+							Path filePath = Paths.get("/home/server-admin/javaProjects/rafflePages/entries.json");
+							//String strFilePath = filePath.toString();
+							String strFilePath = "/home/server-admin/javaProjects/rafflePages/entries.json";
 
 
 
@@ -180,13 +246,15 @@ public class Ws {
                 			} catch (IOException | IllegalStateException e) {
                         			System.out.println("caught an error");
 
-                			}
+                		}
+				}
 
 			}
 			else {
 				System.out.println("not valid");
 
 			}
+
 
 
 
@@ -197,7 +265,7 @@ public class Ws {
 		boolean subscribed = Main.ws.getTopics().topicConfirmedBlocks().subscribeBlocking(
         		new TopicConfirmation.SubArgs()
                 		.includeElectionInfo() // Include election info in the messages
-                		.filterAccounts("nano_38sbai751batgzspmtf4x3bky7pcd3br19upemzbtb9jafaj4pdgbpo4phr5")
+                		.filterAccounts("nano_1iroza4zsyt95uk6ucwhe1nwbe5q7g87gxfhcyuoetfkz5jmac8mtfwwoac4")
 			);
 
 		// Print subscription status
