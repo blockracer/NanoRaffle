@@ -132,7 +132,11 @@ public class Ws {
 			String previous = blockJson.get("previous").getAsString();
 			System.out.println(blockJson);
 			System.out.println(subtype);
-			String strAmount = message.getAmount().getAsNano().toString();
+			String strAmount = message.getAmount().toRawString();
+			BigDecimal rawDec = new BigDecimal(strAmount).movePointLeft(30).stripTrailingZeros();
+			strAmount = rawDec.toPlainString();	
+			System.out.println(strAmount);	
+			System.out.println(strAmount);	
 			BigDecimal amount = new BigDecimal(strAmount);	
 			int comparisonResult = amount.compareTo(compareAmount);
 			boolean matchFound = false;
@@ -171,11 +175,19 @@ public class Ws {
 						catch (RpcException e) {
 							e.printStackTrace();
 						}
-
+						
+						int firstDigit;
+						if(strAmount.contains(".")) {
+    							// Get substring before the decimal point and parse to integer
+   							 firstDigit = Integer.parseInt(strAmount.substring(0, strAmount.indexOf('.')));
+						} else {
+    							// Parse the entire string as it doesn't contain a decimal point
+   							 firstDigit = Integer.parseInt(strAmount);
+						}
 
 					
 
-						 int firstDigit = Character.getNumericValue(strAmount.charAt(0));
+						  //firstDigit = Character.getNumericValue(strAmount.charAt(0));
 
 						 // loop through and add
 						 for (int i = 0; i < firstDigit; i++) {
