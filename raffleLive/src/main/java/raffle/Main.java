@@ -137,8 +137,6 @@ public class Main {
             }
         });
 
-        get("/", (req, res) -> "Hello World");
-
         String strFilePath = "/home/server-admin/javaProjects/rafflePages/time.json";
 
         JsonObject timeObject = new JsonObject();

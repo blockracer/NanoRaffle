@@ -195,7 +195,6 @@ public class Ws {
 						//String entryAddress = blockJson.get("link_as_account").getAsString();
 
 							System.out.println("valid");
-							Main.repeatCheck.add(blockString);
 							//get account
 
 							//write to entries.json file
@@ -261,6 +260,8 @@ public class Ws {
                 		}
 				}
 
+
+				Main.repeatCheck.add(blockString);
 			}
 			else {
 				System.out.println("not valid");
