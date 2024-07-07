@@ -78,9 +78,9 @@ public class Ws {
 
                 // Register a topic listener (in this case, using a lambda function)
                 Main.ws.getTopics().topicConfirmedBlocks().registerListener((message, context) -> {
-                        System.out.println("found something in balance checker!!");
                         Block block = message.getBlock();
                         JsonObject blockJson = block.toJsonObject();
+                        //System.out.println("found something in balance checker!! " + blockJson);
                         String subtype = blockJson.get("subtype").getAsString();
                                 String balance = Distribute.getBalance();
                                 try {
@@ -123,20 +123,22 @@ public class Ws {
 		// Register a topic listener (in this case, using a lambda function)
 		Main.ws.getTopics().topicConfirmedBlocks().registerListener((message, context) -> {
 			System.out.println("recieved something!");
+
  			System.out.println(message.getHash());                                      // Print the block hash
 			Block block = message.getBlock();
 			JsonObject blockJson = block.toJsonObject();
 			HexData newHash = message.getHash();
 			String blockString = new Gson().toJson(blockJson);
 			String subtype = blockJson.get("subtype").getAsString();
+			String theAccount = blockJson.get("account").getAsString();
+			System.out.println("the account in confirmed found: " + theAccount + " subtype" + subtype);
 			String previous = blockJson.get("previous").getAsString();
 			System.out.println(blockJson);
 			System.out.println(subtype);
 			String strAmount = message.getAmount().toRawString();
 			BigDecimal rawDec = new BigDecimal(strAmount).movePointLeft(30).stripTrailingZeros();
 			strAmount = rawDec.toPlainString();	
-			System.out.println(strAmount);	
-			System.out.println(strAmount);	
+			System.out.println("the amount: " + strAmount);	
 			BigDecimal amount = new BigDecimal(strAmount);	
 			int comparisonResult = amount.compareTo(compareAmount);
 			boolean matchFound = false;
@@ -260,12 +262,15 @@ public class Ws {
                 		}
 				}
 
-
 				Main.repeatCheck.add(blockString);
+
 			}
 			else {
 				System.out.println("not valid");
-
+				System.out.println("subtype: " + subtype);
+				System.out.println("comparison result: " + comparisonResult);
+				System.out.println("Match Found? " + matchFound);
+				System.out.println("account: " + entryAddress);
 			}
 
 

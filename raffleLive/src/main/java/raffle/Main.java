@@ -58,7 +58,7 @@ public class Main {
         port(9654);
 
         staticFiles.externalLocation("/home/server-admin/javaProjects/rafflePages");
-        uri = new URI("wss://ws.nanoriver.io");
+        uri = new URI("ws://localhost:1234");
         ws = new NanoWebSocketClient(uri);
 	ws.setObserver(new Observer());
         if (!ws.connect()) {
