@@ -8,6 +8,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/style.css">
     <title>Nano River | Winners</title>
+
+    <style>
+    .avatar-img {
+    width: 100px; /* Default width */
+    height: 100px; /* Default height */
+    object-fit: cover;
+    border-radius: 50%; /* Circular avatar effect */
+}
+
+/* Media query for desktop screens */
+@media screen and (min-width: 768px) {
+    .avatar-img {
+        width: 50px; /* Half size for desktop */
+        height: 50px; /* Half size for desktop */
+        border-radius: 0; /* Remove circular avatar effect */
+    }
+}
+
+	</style>
 </head>
 
 <body>
@@ -20,9 +39,8 @@
 
     <nav>
         <a href="/" class="navlink">HOME</a>
-        <a href="/entries.html" class="navlink">ENTRIES</a>
+        <a href="/entries.html" class ="navlink">ENTRIES</a>
         <a href="/about.html" class="navlink">ABOUT</a>
-
 
 	   <select  onchange="window.location.href=this.value">
         <option value="#" selected disabled>Menu</option>
@@ -32,67 +50,73 @@
     </select>
     </nav>
 
-    <h1 id="pageTitle">PREVIOUS WINNERS</h1>
-    <hr class="divider">
     <main id="secondary">
+        <h1 id="pageTitle">WINNERS</h1>
+        <hr class="divider">
         <table>
             <thead>
                 <tr>
-                    <th>WINNER</th>
-                    <th>PAYOUT</th>
-                    <th>DATE</th>
+			<th style="width: 35%; font-size: 12px;">AVATAR</th>
+                	<th style="width: 20%; font-size: 12px;">PAYOUT</th>
+                	<th style="width: 34%; font-size: 12px;">ADDRESS</th>
+                	<th style="width: 26%; font-size: 12px;">DATE</th>
+
                 </tr>
             </thead>
-            <tbody id="winnersTableBody"></tbody>
+            <tbody id="entriesTableBody"></tbody>
         </table>
     </main>
 
     <script>
-        // Function to fetch winners data, sort by date, and populate the table
-        function fetchWinnersData() {
-            fetch('/winners.json')
-                .then(response => response.json())
-                .then(data => {
-                    // Sort data by date in descending order
-                    data.sort((a, b) => {
-                        const dateA = new Date(
-                            a.time.split('/').reverse().join('-')
-                        );
-                        const dateB = new Date(
-                            b.time.split('/').reverse().join('-')
-                        );
-                        return dateB - dateA;
-                    });
+        // Function to fetch entries data and populate the table
+                // Initial call to fetch and display entries data
+function fetchEntriesData() {
+    fetch('/winners.json')
+        .then(response => response.json())
+        .then(data => {
+            const entriesTableBody = document.getElementById('entriesTableBody');
 
-                    const winnersTableBody = document.getElementById('winnersTableBody');
 
-                    // Clear previous table rows
-                    winnersTableBody.innerHTML = '';
+            // Clear previous table rows
+            entriesTableBody.innerHTML = '';
+            const reversedData = data.reverse();
 
-                    // Populate the table with data
-                    data.forEach(winner => {
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                            <td style="text-align: left; cursor: pointer;" onclick="copyToClipboard('${winner.winner}')">${winner.winner}</td>
-                            <td>Ӿ${parseFloat(winner.payout).toFixed(4)}</td>
-                            <td>${winner.time}</td>
-                        `;
-                        winnersTableBody.appendChild(row);
-                    });
-                });
-        }
+            // Populate the table with data
+            reversedData.forEach(winner => {
+		let number = parseFloat(winner.payout);
+		const fNumber = number.toFixed(5);
+                const row = document.createElement('tr');
+                row.style.lineHeight = '1.5'; // Adjust the value for line height as needed
+                row.innerHTML = `
+                    <td class="avatar-cell">
+                        <img src="data:image/png;base64,${winner.avatar}" class="avatar-img">
+                    </td>
+	           <td>${fNumber}</td>
 
-        // Initial call to fetch and display winners data
-        fetchWinnersData();
+                    <td style="cursor: pointer;" onclick="copyToClipboard('${winner.winner}')">${winner.winner}</td>
+                    <td>${winner.time}</td>
+                `;
+                entriesTableBody.appendChild(row);
+            });
+        })
+        .catch(error => {
+            console.error('Error fetching data:', error);
+        });
+}
 
-        // Update winners data every 5 minutes (adjust as needed)
-        setInterval(fetchWinnersData, 300000); // 300000 milliseconds = 5 minutes
+	    
+	
+        fetchEntriesData();
 
-        // Function to copy winner's address to clipboard and show alert
+        // Update entries data every 5 minutes (adjust as needed)
+        setInterval(fetchEntriesData, 300000); // 300000 milliseconds = 5 minutes
+
+        // Function to copy entry's address to clipboard and show alert
         function copyToClipboard(address) {
             navigator.clipboard.writeText(address);
             alert(`Address copied to clipboard: ${address}`);
         }
+
     </script>
 </body>
 

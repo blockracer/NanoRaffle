@@ -37,8 +37,10 @@
         <table>
             <thead>
                 <tr>
-                    <th>ENTRY</th>
+		    <th style="width: 100px; height: 50px">ENTRY</th>
+		    <th style="width: 100px; height: 50px">AVATAR</th>
                     <th>NANO ADDRESS</th>
+
                 </tr>
             </thead>
             <tbody id="entriesTableBody"></tbody>
@@ -59,15 +61,16 @@
                     // Populate the table with data
                     data.forEach(entry => {
                         const row = document.createElement('tr');
-                        row.innerHTML = `
-                            <td>${entry.entry}</td>
-                            <td style="text-align: left; cursor: pointer;" onclick="copyToClipboard('${entry.address}')">${entry.address}</td>
-                        `;
-                        entriesTableBody.appendChild(row);
+					row.innerHTML = `
+	   					<td style="font-weight: bold; font-size: 24px;">${entry.entry}</td>
+	   					<td><img id="ItemPreview" src="data:image/png;base64,${entry.avatar}" style="width: 100%; height: auto; display: block;"></td>
+    						<td style="text-align: left; cursor: pointer;" onclick="copyToClipboard('${entry.address}')">${entry.address}</td>
+					`;
+                                                entriesTableBody.appendChild(row);
                     });
-                });
-        }
-
+  		});
+        
+	}
         // Initial call to fetch and display entries data
         fetchEntriesData();
 
@@ -79,6 +82,7 @@
             navigator.clipboard.writeText(address);
             alert(`Address copied to clipboard: ${address}`);
         }
+
     </script>
 </body>
 
