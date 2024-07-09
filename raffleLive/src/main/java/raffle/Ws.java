@@ -61,6 +61,10 @@ import uk.oczadly.karl.jnano.model.work.WorkSolution;
 import uk.oczadly.karl.jnano.util.workgen.OpenCLWorkGenerator.OpenCLInitializerException;
 import uk.oczadly.karl.jnano.rpc.exception.RpcInvalidArgumentException;
 
+import com.talanlabs.avatargenerator.eightbit.EightBitAvatar;
+import com.talanlabs.avatargenerator.Avatar;
+import java.util.Base64;
+
 
 public class Ws {
 	public static void balanceChecker(Session session) throws URISyntaxException, InterruptedException, IOException {
@@ -148,11 +152,13 @@ public class Ws {
 					matchFound = true;
 				}
 			}
-					System.out.println("got to match not found adding!");
 
 					String entryAddress = blockJson.get("account").getAsString();
 
 					if (subtype.equals("send") && comparisonResult >= 0 && matchFound == false && !entryAddress.equals("nano_1iroza4zsyt95uk6ucwhe1nwbe5q7g87gxfhcyuoetfkz5jmac8mtfwwoac4")) {
+
+						System.out.println("check passed, adding to entriestest.json");
+
 						String blockAccount = blockJson.get("account").getAsString();
 
 
@@ -179,6 +185,7 @@ public class Ws {
 						}
 						
 						int firstDigit;
+						
 						if(strAmount.contains(".")) {
     							// Get substring before the decimal point and parse to integer
    							 firstDigit = Integer.parseInt(strAmount.substring(0, strAmount.indexOf('.')));
@@ -227,6 +234,9 @@ public class Ws {
 							JsonObject entryObject = new JsonObject();
 							entryObject.addProperty("entry", String.valueOf(lastEntryInt));
 							entryObject.addProperty("address", entryAddress);
+							//get base64 of avatar
+							String avatarBytes = getAvatarBase64(entryAddress);
+							entryObject.addProperty("avatar", avatarBytes);
 							entriesArray.add(entryObject);
 							//write to file
 							try(PrintWriter writer = new PrintWriter(new File(strFilePath))) {
@@ -241,6 +251,8 @@ public class Ws {
 							JsonObject firstObj = new JsonObject();
 							firstObj.addProperty("entry", "1");
 							firstObj.addProperty("address", entryAddress);
+							String avatarBytes = getAvatarBase64(entryAddress);
+							firstObj.addProperty("avatar", avatarBytes);
 							JsonArray firstArray = new JsonArray();
 							firstArray.add(firstObj);
 							//write to file
@@ -289,5 +301,21 @@ public class Ws {
 		// Print subscription status
 		System.out.println(subscribed ? "Subscribed to topic!" : "Could not subscribe to topic!");
 	}
+	
+	  public static String getAvatarBase64(String entryAddress) {
+                String extractedDigits = entryAddress.replaceAll("[^\\d]+", "");
+                String lastSixCharacters = extractedDigits.substring(Math.max(extractedDigits.length() - 6, 0));
+                System.out.println(lastSixCharacters);
+
+
+                //String firstSixDigits = extractedDigits.substring(0, Math.min(6, extractedDigits.length()));
+                long avatarId = Long.valueOf(lastSixCharacters).longValue();
+
+                Avatar avatar = EightBitAvatar.newMaleAvatarBuilder().build();
+                byte[] avatarBytes = avatar.createAsPngBytes(avatarId);
+                String avatarString =  Base64.getEncoder().encodeToString(avatarBytes);
+                return avatarString;
+
+        }
 }
 

@@ -37,6 +37,8 @@ dependencies {
 	implementation 'com.google.code.gson:gson:2.8.9'
  	implementation 'com.sparkjava:spark-core:2.9.3'
 	implementation 'uk.oczadly.karl:jnano:2.20.1'
+  	implementation 'com.talanlabs:avatar-generator:1.1.0'
+        implementation 'com.talanlabs:avatar-generator-8bit:1.1.0'
 	//implementation 'ch.qos.logback:logback-classic:1.2.6'
 }
 

@@ -188,14 +188,16 @@ public class Distribute {
 		JsonObject winnerObj = new JsonObject();
 		payout = payout.movePointLeft(30);
 		payout = payout.stripTrailingZeros();
+		String base64 = Ws.getAvatarBase64(winnerAccount);
 		winnerObj.addProperty("winner", winnerAccount);
 		winnerObj.addProperty("payout", payout.toString());
+		winnerObj.addProperty("avatar", base64);
 
 
 		//date
 		LocalDateTime currentDateTimeUTC = LocalDateTime.now(ZoneOffset.UTC);
      //   	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM d, yyyy 'UTC'", Locale.ENGLISH);
-       		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy", Locale.ENGLISH);
+       		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy--MM--dd", Locale.ENGLISH);
         	String time = currentDateTimeUTC.format(formatter);
 
 		winnerObj.addProperty("time", time);
