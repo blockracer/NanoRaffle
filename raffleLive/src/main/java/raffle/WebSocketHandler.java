@@ -21,6 +21,7 @@ public class WebSocketHandler {
     @OnWebSocketConnect
     public void connected(Session session) {
         sessions.add(session);
+        Main.balanceSessions.add(session);
 	Timer timer = new Timer();
 
 	timer.scheduleAtFixedRate(new TimerTask() {
@@ -45,15 +46,9 @@ public class WebSocketHandler {
         }, 30000, 30000);
         // Schedule the task to run at a fixed rate of 100 seconds
 	try {
-		Ws.balanceChecker(session);
+		Ws.firstBalance(session);
 	}
-	catch(URISyntaxException e) {
-		e.printStackTrace();
-	}
-	catch(InterruptedException e) {
-		e.printStackTrace();
-	}
-	catch(IOException e) {
+	catch(Exception e) {
 		e.printStackTrace();
 	}
     }
@@ -61,6 +56,7 @@ public class WebSocketHandler {
     @OnWebSocketClose
     public void closed(Session session, int statusCode, String reason) {
         sessions.remove(session);
+        Main.balanceSessions.remove(session);
     }
 
     @OnWebSocketMessage

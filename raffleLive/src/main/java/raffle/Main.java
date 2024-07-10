@@ -38,6 +38,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.List;
 import java.util.ArrayList;
+import org.eclipse.jetty.websocket.api.*;
+import org.eclipse.jetty.websocket.api.annotations.*;
 
 import raffle.Ws;
 import raffle.Distribute;
@@ -46,6 +48,7 @@ public class Main {
 	public static List<String> repeatCheck = new ArrayList<>();
 	private static final ConcurrentHashMap<String, AtomicLong> requestCounters = new ConcurrentHashMap<>();
     public static String globalBalance;
+    public static final List<Session> balanceSessions = new ArrayList<>();
     private static final Map<String, Long> websocketConnectionTimestamps = new HashMap<>();
     private static final long WEBSOCKET_RATE_LIMIT_INTERVAL_MS = 60000; // 1 minute
     private static final int MAX_WEBSOCKET_CONNECTIONS_PER_INTERVAL = 60;
@@ -55,10 +58,10 @@ public class Main {
 
     public static void main(String[] args) throws URISyntaxException, InterruptedException, IOException {
 
-        port(9654);
+        port(1234);
 
         staticFiles.externalLocation("/home/server-admin/javaProjects/rafflePages");
-        uri = new URI("ws://localhost:1234");
+        uri = new URI("ws://127.0.0.1:7894");
         ws = new NanoWebSocketClient(uri);
 	ws.setObserver(new Observer());
         if (!ws.connect()) {
@@ -114,6 +117,7 @@ public class Main {
             	if (!"nanoriver.io".equals(mainDomain)) {
                 	halt(403, "Forbidden: Direct access to this server is not allowed.");
 		}
+		
         });
 
 	get("/", (req, res) -> {
@@ -212,7 +216,6 @@ public class Main {
 
         // start jnano websockets
         Ws.webSocket();
-        System.out.println("Test");
     }
 
     private static boolean isWebSocketRateLimited(String ipAddress) {
@@ -250,7 +253,6 @@ public class Main {
         }
         return host; // Return the original host if extraction fails
     }
-
 
 }
 

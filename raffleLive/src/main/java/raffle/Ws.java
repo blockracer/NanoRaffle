@@ -67,19 +67,24 @@ import java.util.Base64;
 
 
 public class Ws {
-	public static void balanceChecker(Session session) throws URISyntaxException, InterruptedException, IOException {
 
-                String firstBal = Distribute.getBalance();
+	public static void firstBalance(Session session) {
+				String firstBal = Distribute.getBalance();
                                 try {
                                         BigDecimal balanceDec = new BigDecimal(firstBal).movePointLeft(30).stripTrailingZeros();
                                         firstBal = balanceDec.toString();
                                         Main.globalBalance = firstBal;
-                                        session.getRemote().sendString(firstBal);
+					//broadCastMessage(firstBal);
+                                    	session.getRemote().sendString(firstBal);
                                 }
                                 catch (IOException e) {
                                         e.printStackTrace();
                                 }
 
+	}
+	public static void balanceChecker() throws URISyntaxException, InterruptedException, IOException {
+
+                
                 // Register a topic listener (in this case, using a lambda function)
                 Main.ws.getTopics().topicConfirmedBlocks().registerListener((message, context) -> {
                         Block block = message.getBlock();
@@ -91,13 +96,12 @@ public class Ws {
                                         BigDecimal balanceDec = new BigDecimal(balance).movePointLeft(30).stripTrailingZeros();
                                         balance = balanceDec.toString();
                                         Main.globalBalance = balance;
-                                        session.getRemote().sendString(balance);
-                                }
-                                catch (IOException e) {
-                                        e.printStackTrace();
+                                       // session.getRemote().sendString(balance);
+				       broadcastMessage(balance);
                                 }
                                 catch (WebSocketException e) {
-                                        System.out.println("session closed");
+				//	e.printStackTrace();
+                                 //       System.out.println("session closed");
                                 }
                 });
                 // Subscribe to the confirmed blocks topic, and specify filters and configuration
@@ -317,5 +321,14 @@ public class Ws {
                 return avatarString;
 
         }
+	public static void broadcastMessage(String globalBalance) {
+        	for (Session session : Main.balanceSessions) {
+            		try {
+                		session.getRemote().sendString(globalBalance);
+           		 } catch (Exception e) {
+                		e.printStackTrace();
+            		}
+        	}
+    	}
 }
 
