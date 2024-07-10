@@ -94,10 +94,10 @@ public class Ws {
                                 String balance = Distribute.getBalance();
                                 try {
                                         BigDecimal balanceDec = new BigDecimal(balance).movePointLeft(30).stripTrailingZeros();
-                                        balance = balanceDec.toString();
-                                        Main.globalBalance = balance;
+                                        //balance = balanceDec.toString();
+                                        Main.globalBalance = balanceDec.toString();
                                        // session.getRemote().sendString(balance);
-				       broadcastMessage(balance);
+				       broadcastMessage();
                                 }
                                 catch (WebSocketException e) {
 				//	e.printStackTrace();
@@ -321,10 +321,11 @@ public class Ws {
                 return avatarString;
 
         }
-	public static void broadcastMessage(String globalBalance) {
+	public static void broadcastMessage() {
         	for (Session session : Main.balanceSessions) {
             		try {
-                		session.getRemote().sendString(globalBalance);
+				//System.out.println("broadcasing to session: " + Main.globalBalance);
+                		session.getRemote().sendString(Main.globalBalance);
            		 } catch (Exception e) {
                 		e.printStackTrace();
             		}

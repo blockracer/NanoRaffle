@@ -64,6 +64,7 @@ public class Main {
         uri = new URI("ws://127.0.0.1:7894");
         ws = new NanoWebSocketClient(uri);
 	ws.setObserver(new Observer());
+	Ws.balanceChecker();
         if (!ws.connect()) {
             // Connection failed
             System.err.println("Could not connect to WebSocket!");
