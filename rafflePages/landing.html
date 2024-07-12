@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="/style.css">
     <link rel="icon" href="favicon.ico" type="image/x-icon">
     <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
-    <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
+    <!-- <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script> -->
 </head>
 
 <body>
@@ -36,26 +36,24 @@
     <main>
         <h1 id="pageTitle">NANO RAFFLE</h1>
         <hr class="divider">
-	<div id="entryMessage">Ӿ1 PER ENTRY <br>(Multiple entries from a single payment enabled)</div><br><br>
+	<div id="entryMessage">Ӿ1 PER ENTRY <br>(Multiple entries from a single payment enabled)</div>
         <div id="nanoAddress">
-            <strong>NANO ADDRESS:</strong><br><br>
+		<p><strong>NANO ADDRESS:</strong></p>
             <b>nano_1iroza4zsyt95uk6ucwhe1nwbe5q7g87gxfhcyuoetfkz5jmac8mtfwwoac4</b>
             <button id="copyButton" onclick="copyToClipboard()"><i class="fas fa-copy"></i></button>
         </div>
-        <div id="qrcodeContainer">
-            <div id="qrcode" onclick="openNanoLink()"></div>
-        </div>
-	    <br>
-	    Tap/click QR code to open nano wallet/application.
-        <div id="websocketMessages"></div>
-        <div id="countdownTimer"></div><br><br>
+	<div id="qrcodeContainer">
+    		<img id="myImage" src="/qr.png" alt="QR Code" onclick="openNanoLink()">
+	</div>
+	    <p style="margin-bottom: 0;">Tap/click QR code to open nano wallet/application.</p>
+	    <div id="websocketMessages"></div>
+	    <div id="countdownTimer"></div>
+	     <span style="display: block; margin-top: 10px;"></span>
         <hr class="divider">
     </main>
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"></script>
 
     <script>
-        let a = "?r=Armour";
         const worker = new Worker('worker.js');
 
         // Function to update countdown timer
@@ -89,7 +87,7 @@
             const displayedPotAmount = (potAmount < 0.00001) ? 0 : potAmount.toFixed(5).replace(/\.?0+$/, '');
 
             websocketMessages.textContent = `CURRENT POT: Ӿ${displayedPotAmount}`;
-
+		/*
             const qrcodeElement = document.getElementById('qrcode');
             qrcodeElement.innerHTML = '';
 		const qrcode = new QRCode(qrcodeElement, {
@@ -97,6 +95,7 @@
                 	width: 128,
                 	height: 128
             });
+	   */
 
              }
         

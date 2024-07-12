@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"></script>
@@ -10,115 +9,167 @@
     <title>Nano River | Winners</title>
 
     <style>
-    .avatar-img {
-    width: 100px; /* Default width */
-    height: 100px; /* Default height */
-    object-fit: cover;
-    border-radius: 50%; /* Circular avatar effect */
-}
+        .avatar-img {
+            width: 100px; /* Default width */
+            height: 100px; /* Default height */
+            object-fit: cover;
+            display: block;
+            margin: auto; /* Center the image horizontally */
+        }
 
-/* Media query for desktop screens */
-@media screen and (min-width: 768px) {
-    .avatar-img {
-        width: 50px; /* Half size for desktop */
-        height: 50px; /* Half size for desktop */
-        border-radius: 0; /* Remove circular avatar effect */
-    }
-}
+        /* Media query for desktop screens */
+        @media screen and (min-width: 768px) {
+            .avatar-cell {
+                width: 5%; /* Adjust the width as per your preference */
+            }
+            .address-cell {
+                width: 60%; /* Adjust the width as per your preference */
+            }
+            .payout-date-cell {
+                width: 35%; /* Adjust the width as per your preference */
+            }
+            .date-cell {
+                /* No need for specific styles here */
+            }
+        }
 
-	</style>
+        /* Media query for smaller screens (like mobile) */
+        @media screen and (max-width: 767px) {
+            .avatar-cell {
+                width: 100%; /* Adjust the width as per your preference */
+                text-align: left; /* Center-align text on small screens */
+		font-size: 16px;
+		vertical-align: top; /* Align text to the top */
+
+            }
+
+            .address-cell {
+                width: 100%; /* Full width for address column on smaller screens */
+                white-space: normal; /* Allow text to wrap */
+                word-wrap: break-word; /* Break words to fit within the cell */
+                text-align: left; /* Center-align text on small screens */
+		font-weight: bold;
+		vertical-align: top; /* Align text to the top */
+		font-size: 16px;
+            }
+            .payout-date-cell {
+		vertical-align: top; /* Align text to the top */
+		text-align: left;
+                width: 100%; /* Full width for combined column on smaller screens */
+                white-space: normal; /* Allow text to wrap */
+                word-wrap: break-word; /* Break words to fit within the cell */
+                text-align: center; /* Center-align text on small screens */
+		font-size: 16px;
+            }
+            .date-cell {
+                display: none; /* Hide date column on smaller screens */
+            }
+        }
+
+        table {
+            width: 100%; /* Full width of container */
+            border-collapse: collapse; /* Ensure no spaces between cells */
+        }
+
+        th, td {
+            padding: 10px; /* Padding for content spacing */
+            text-align: left; /* Left align text in cells */
+            vertical-align: middle; /* Vertically center content */
+        }
+
+        /* Optional: Adjust font size for small screens */
+        @media screen and (max-width: 480px) {
+            th, td {
+                font-size: 12px; /* Adjust font size for smaller screens */
+            }
+        }
+    </style>
 </head>
-
 <body>
 
-    <header>
-        <div id="logo-container">
-            <img id="logo" src="/logo.png" alt="Nano Raffle Logo">
-        </div>
-    </header>
+<header>
+    <div id="logo-container">
+        <img id="logo" src="/logo.png" alt="Nano Raffle Logo">
+    </div>
+</header>
 
-    <nav>
-        <a href="/" class="navlink">HOME</a>
-        <a href="/entries.html" class ="navlink">ENTRIES</a>
-        <a href="/about.html" class="navlink">ABOUT</a>
+<nav>
+    <a href="/" class="navlink">HOME</a>
+    <a href="/entries.html" class="navlink">ENTRIES</a>
+    <a href="/about.html" class="navlink">ABOUT</a>
 
-	   <select  onchange="window.location.href=this.value">
+    <select onchange="window.location.href=this.value">
         <option value="#" selected disabled>Menu</option>
         <option value="/">Home</option>
         <option value="entries.html">Entries</option>
         <option value="about.html">About</option>
     </select>
-    </nav>
+</nav>
 
-    <main id="secondary">
-        <h1 id="pageTitle">WINNERS</h1>
-        <hr class="divider">
-        <table>
-            <thead>
-                <tr>
-			<th style="width: 35%; font-size: 12px;">AVATAR</th>
-                	<th style="width: 20%; font-size: 12px;">PAYOUT</th>
-                	<th style="width: 34%; font-size: 12px;">ADDRESS</th>
-                	<th style="width: 26%; font-size: 12px;">DATE</th>
+<main id="secondary">
+    <h1 id="pageTitle">WINNERS</h1>
+    <hr class="divider">
+    <table>
+        <thead>
+            <tr>
+                <th class="avatar-cell">AVATAR</th>
+                <th class="address-cell">WINNER</th>
+                <th class="payout-date-cell">PAYOUT / DATE</th>
+            </tr>
+        </thead>
+        <tbody id="entriesTableBody"></tbody>
+    </table>
+</main>
 
-                </tr>
-            </thead>
-            <tbody id="entriesTableBody"></tbody>
-        </table>
-    </main>
+<script>
+    // Function to fetch winners data and populate the table
+    function fetchEntriesData() {
+        fetch('/winners.json')
+            .then(response => response.json())
+            .then(data => {
+                const entriesTableBody = document.getElementById('entriesTableBody');
 
-    <script>
-        // Function to fetch entries data and populate the table
-                // Initial call to fetch and display entries data
-function fetchEntriesData() {
-    fetch('/winners.json')
-        .then(response => response.json())
-        .then(data => {
-            const entriesTableBody = document.getElementById('entriesTableBody');
+                // Clear previous table rows
+                entriesTableBody.innerHTML = '';
 
-
-            // Clear previous table rows
-            entriesTableBody.innerHTML = '';
-            const reversedData = data.reverse();
-
-            // Populate the table with data
-            reversedData.forEach(winner => {
-		let number = parseFloat(winner.payout);
-		const fNumber = number.toFixed(5);
-                const row = document.createElement('tr');
-                row.style.lineHeight = '1.5'; // Adjust the value for line height as needed
-                row.innerHTML = `
-                    <td class="avatar-cell">
-                        <img src="data:image/png;base64,${winner.avatar}" class="avatar-img">
-                    </td>
-	           <td>${fNumber}</td>
-
-                    <td style="cursor: pointer;" onclick="copyToClipboard('${winner.winner}')">${winner.winner}</td>
-                    <td>${winner.time}</td>
-                `;
-                entriesTableBody.appendChild(row);
+                // Populate the table with data
+                data.reverse().forEach(winner => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td class="avatar-cell">
+                            <img src="data:image/png;base64,${winner.avatar}" class="avatar-img">
+                        </td>
+                        <td class="address-cell" style="cursor: pointer;" onclick="copyToClipboard('${winner.winner}')">${winner.winner}</td>
+                        <td class="payout-date-cell">
+       <div><b>Payout:</b> Ӿ${parseFloat(winner.payout).toFixed(5)}</div>
+       <div><b>Date:</b> ${winner.time}</div>
+                        </td>
+                    `;
+                    entriesTableBody.appendChild(row);
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching data:', error);
             });
-        })
-        .catch(error => {
-            console.error('Error fetching data:', error);
-        });
-}
+    }
 
-	    
-	
-        fetchEntriesData();
+    // Initial call to fetch and display winners data
+    fetchEntriesData();
 
-        // Update entries data every 5 minutes (adjust as needed)
-        setInterval(fetchEntriesData, 300000); // 300000 milliseconds = 5 minutes
+    // Update winners data every 5 minutes (adjust as needed)
+    setInterval(fetchEntriesData, 300000); // 300000 milliseconds = 5 minutes
 
-        // Function to copy entry's address to clipboard and show alert
-        function copyToClipboard(address) {
-            navigator.clipboard.writeText(address);
-            alert(`Address copied to clipboard: ${address}`);
-        }
+    // Function to copy winner's address to clipboard and show alert
+    function copyToClipboard(address) {
+        navigator.clipboard.writeText(address);
+        alert(`Address copied to clipboard: ${address}`);
+    }
+</script>
 
-    </script>
+<hr class="divider">
+
+<footer style="color: white;">Made with <span style="color: red;">❤️</span> by <a href="https://github.com/blockracer" style="color: white;">@blockracer</a></footer>
+
 </body>
-
 </html>
 

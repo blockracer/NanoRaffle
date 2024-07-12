@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "@dicebear/collection": "^9.0.1",
+    "@dicebear/core": "^9.0.1",
+    "easyqrcodejs": "^4.6.1",
+    "random-avatar-generator": "^2.0.0",
+    "seedable-random-avatar-generator": "^1.1.2"
+  }
+}
