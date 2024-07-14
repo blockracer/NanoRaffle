@@ -58,17 +58,17 @@ public class Main {
 
     public static void main(String[] args) throws URISyntaxException, InterruptedException, IOException {
 
-        port(1234);
+        port(9654);
 
         staticFiles.externalLocation("/home/server-admin/javaProjects/rafflePages");
         uri = new URI("ws://127.0.0.1:7894");
         ws = new NanoWebSocketClient(uri);
 	ws.setObserver(new Observer());
-	Ws.balanceChecker();
         if (!ws.connect()) {
             // Connection failed
             System.err.println("Could not connect to WebSocket!");
         }
+	Ws.balanceChecker();
 	ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
         	// Define the task to be executed
@@ -126,6 +126,24 @@ public class Main {
 		res.type("text/html");
 		return htmlContent;
         });
+	get("/entries", (req, res) -> {
+		String htmlContent = new String(Files.readAllBytes(Paths.get("/home/server-admin/javaProjects/rafflePages/entries.html")));
+		res.type("text/html");
+		return htmlContent;
+        });
+get("/winners", (req, res) -> {
+		String htmlContent = new String(Files.readAllBytes(Paths.get("/home/server-admin/javaProjects/rafflePages/winners.html")));
+		res.type("text/html");
+		return htmlContent;
+        });
+get("/about", (req, res) -> {
+		String htmlContent = new String(Files.readAllBytes(Paths.get("/home/server-admin/javaProjects/rafflePages/about.html")));
+		res.type("text/html");
+		return htmlContent;
+        });
+
+
+
 
 
 

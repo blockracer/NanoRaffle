@@ -9,6 +9,9 @@
     <title>Nano River | Winners</title>
 
     <style>
+  		.hidden {
+    			display: none;
+  		}
         .avatar-img {
             width: 100px; /* Default width */
             height: 100px; /* Default height */
@@ -95,8 +98,8 @@
 
 <nav>
     <a href="/" class="navlink">HOME</a>
-    <a href="/entries.html" class="navlink">ENTRIES</a>
-    <a href="/about.html" class="navlink">ABOUT</a>
+    <a href="/entries" class="navlink">ENTRIES</a>
+    <a href="/about" class="navlink">ABOUT</a>
 
     <select onchange="window.location.href=this.value">
         <option value="#" selected disabled>Menu</option>
@@ -111,7 +114,7 @@
     <hr class="divider">
     <table>
         <thead>
-            <tr>
+            <tr class="hidden">
                 <th class="avatar-cell">AVATAR</th>
                 <th class="address-cell">WINNER</th>
                 <th class="payout-date-cell">PAYOUT / DATE</th>

@@ -150,6 +150,8 @@ public class Ws {
 			BigDecimal amount = new BigDecimal(strAmount);	
 			int comparisonResult = amount.compareTo(compareAmount);
 			boolean matchFound = false;
+
+			String entryAddress2 = blockJson.get("account").getAsString();
 			 for (String str : Main.repeatCheck) {
             			if (str.equalsIgnoreCase(previous)) {
                 			System.out.println("Match found: " + str);
@@ -251,6 +253,9 @@ public class Ws {
                        					}
 						}
 						else {
+							System.out.println("Adding new ENTRY");
+
+							System.out.println("Adding new ENTRY");
 							//write a new jsonarray entry
 							JsonObject firstObj = new JsonObject();
 							firstObj.addProperty("entry", "1");
@@ -259,6 +264,8 @@ public class Ws {
 							firstObj.addProperty("avatar", avatarBytes);
 							JsonArray firstArray = new JsonArray();
 							firstArray.add(firstObj);
+							System.out.println(firstArray);
+							System.out.println(firstArray);
 							//write to file
 							try(PrintWriter writer = new PrintWriter(new File(strFilePath))) {
                                 				writer.write(firstArray.toString());
@@ -274,6 +281,7 @@ public class Ws {
                         			reader.close();
                 			} catch (IOException | IllegalStateException e) {
                         			System.out.println("caught an error");
+						e.printStackTrace();
 
                 		}
 				}
